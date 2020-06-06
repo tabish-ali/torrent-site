@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% include 'navbar.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+{%  load static %}
+<link rel="stylesheet" href="{% static '/pages-css/account-info.css' %}">
+
+{% if user.is_authenticated %}
+
+<div class="container">
+    <div class="card">
+
+
+        <h5 class="card-header">
+
+            {% for users in user_profile  %}
+            {% if user.id == users.user_id %}
+            {% if not users.image_field == "" %}
+            <img class="user-avatar" src="../{{users.image_field}}">
+            {%  else %}
+
+            {% load static %}
+
+            <img class="user-avatar ml-2" src="{% static '/user_images/default.png' %}">
+
+            {% endif %}
+
+            {% endif %}
+
+            {% endfor %}
+        </h5>
+        <div class="card-body">
+            {% for users in user_profile  %}
+            {% if user.id == users.user_id %}
+
+            <h5>Name: {{users.first_name}} </h5>
+            <hr />
+
+            <h5>Username: {{user.username}} </h5>
+            <hr />
+
+            <h5>Email: {{users.email}} </h5>
+
+            <hr />
+            <a href="/account-edit" class="btn btn-primary btn-sm edit-btn">
+                Change Profile
+            </a>
+            <a href="/change-password" class="btn btn-primary btn-sm edit-btn">
+                Change Password
+            </a>
+
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

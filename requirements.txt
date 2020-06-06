@@ -1,0 +1,9 @@
+asgiref             
+bencode.py         
+Django               
+django-crispy-forms           
+Pillow                                
+setuptools          
+sqlparse             
+wheel
+mysqlclient                

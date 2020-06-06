@@ -1,0 +1,127 @@
+.container {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  
+
+  }
+  .header-text{
+    margin-top: 5px;
+  }
+  .header{
+    color:white;
+    background-color: #343a40;
+    padding: 10px 10px 10px 10px;
+    border: solid aqua;
+    border-width: 0px 0px 0px 5px;
+  }
+  .torrent-thumbnail{
+    margin: 20px 0px 20px 0;
+  }
+  .interact-div{
+    margin: 20px 0px 10px 0px;
+  }
+  .torrent-container{
+    border-radius: 5px;
+  }
+  .torrent-info{
+    border: 1px solid #403e44;
+    color: wheat;
+    padding: 10px 0px 10px 0px;
+  }
+  .torrent-meta-details{
+    margin:15px 0px 15px 0px;
+    border:1px solid #403e44;
+    padding: 1em 1em 1em 1em;
+  }
+  .torrent-img{
+    height: 50px;
+    width:50px;
+    border-width: 2px;
+  }
+  h5 {
+    font-size: 20px;
+  }
+
+  span{
+    font-size:13px;
+    color:white;
+    font-weight: bold;
+  }
+
+  #likeBtn{
+    border: none;
+    cursor: pointer;
+    background-color:transparent;
+    color:white;
+  }
+  #unLikeBtn{
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    color:white;
+  }
+  #likes-list{
+    list-style-type: none;
+  }
+  #dislikes-list{
+    list-style-type: none;
+  }
+  .modal-dialog{
+    opacity: 0.9;
+  }
+  .modal-backdrop {
+    background-color:slategray;
+ }
+ .modal-content{
+   color:white;
+   background-color: #1c2833;
+ }
+  #comments{
+    background-color:transparent;
+    border:1px solid white;
+    margin:15px 0px 15px 0px;
+    padding: 5px 5px 5px 5px;
+    border-width: 0 0 2px 0;
+    color:white;
+    font-size: 14px;
+    min-height: 1em;
+	  max-height: 50vh;
+	  width: 100%;
+    resize: none;
+    box-shadow: none;
+    opacity: 0.9;
+    overflow:hidden;
+    margin-right: 5px;
+  }
+  #comments:focus{
+    border: 1px solid #3c9dde;
+    border-width: 0 0 2px 0;
+  }
+  #comments::selection{
+    background-color: aqua;
+    color: black;
+  }
+  #user-name{
+    color:aqua;
+  }
+  #comments-display-area{
+    padding: 10px 5px 5px 5px;
+    word-wrap:break-word;
+    color:white;
+    border: 1px solid #403e44;
+  }
+  #separator{
+    border: 1px solid #403e44;
+  }
+  #trackers{
+    display: none;
+  }
+  hr{
+    border-color: #403e44;
+  }
+  .like-c-btn{
+    background-color: transparent;
+    color:white;
+    border:none;
+    cursor: pointer;
+  }

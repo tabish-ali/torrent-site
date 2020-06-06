@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% include 'navbar.html' %}
+{% block content %}
+{%  load static %}
+<link rel="stylesheet" href="{% static '/pages-css/register.css' %}">
+
+<div class="login-page">
+	<div class="myform form">
+		<form action="" method="post" enctype="multipart/form-data" name="login">
+			{% csrf_token %}
+			<div class="form-group">
+				{{ profile_form.first_name}}
+				{{ profile_form.firstname.errors }}
+			</div>
+			<div class="form-group">
+				{{form.username}}
+				{{ form.username.errors }}
+			</div>
+			<div class="form-group">
+				{{ profile_form.email}}
+				{{ profile_form.email.errors }}
+			</div>
+			<div class="form-group">
+				{{ form.password1}}
+				{{ form.password1.errors }}
+			</div>
+			<div class="form-group">
+				{{ form.password2}}
+				{{ form.password2.errors }}
+			</div>
+			<div class="text-center image-field">
+				<small style="color: white;">Image: </small>
+				{{ profile_form.image_field }}
+			</div>
+			<div class="text-center mt-2">
+				<button type="submit" class=" btn btn-block btn-primary">Register</button>
+			</div>
+
+		</form>
+	</div>
+</div>
+
+{% endblock %}

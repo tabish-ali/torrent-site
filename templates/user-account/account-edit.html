@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% include 'navbar.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+{%load static%}
+
+<link rel="stylesheet" href="{% static '/pages-css/account-edit.css' %}">
+<script type="text/javascript" src="{% static '/pages-js/account-edit.js' %}"></script>
+<script type="text/javascript">
+        $(document).ready(function () {
+                {% if user.is_authenticated %}
+                {% for users in user_profile %}
+                {% if user.id == users.user_id %}
+
+                var first_name_input = document.getElementById("id_first_name");
+                first_name_input.value = "{{users.first_name}}";
+                var user_name_input = document.getElementById("id_username");
+                user_name_input.value = "{{user.username}}";
+                var user_email_input = document.getElementById("id_email");
+                user_email_input.value = "{{users.email}}";
+
+                var input_fields = [first_name_input, user_name_input, user_email_input];
+
+                input_fields.forEach(element => {
+                        element.className = "form-control my-input";
+                });
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+
+                ;
+        });
+</script>
+{% if user.is_authenticated %}
+<div class="container">
+        <div class="card">
+                <form method="POST" enctype="multipart/form-data">
+                        <h5 class="card-header">
+                                {% csrf_token %}
+                                {% for images in user_profile  %}
+                                {% if user.id == images.user_id %}
+                                {% if not images.image_field == "" %}
+                                <label onchange="loadFile(event)" for="id_image_field" type="button" id="avatar-btn">
+                                        <img id="output" class="user-avatar" src="../{{images.image_field}}">
+                                        {{form.image_field}}
+                                </label>
+                                {%  else %}
+                                <label onchange="loadFile(event)" for="id_image_field" type="button" id="avatar-btn">
+                                        {% load static %}
+                                        <img id="output" class="user-avatar ml-2"
+                                                src="{% static '/user_images/default.png' %}">
+                                        {{form.image_field}}
+
+                                </label>
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                        </h5>
+
+                        <div class="card-body">
+                                {% for users in user_profile  %}
+                                {% if user.id == users.user_id %}
+                                <div class="form-group">
+                                        {{form.first_name}}
+                                </div>
+                                <div class="form-group">
+                                        {{user_form.username}} {{username_error}}
+                                </div>
+                                <div class="form-group">
+                                        {{form.email}} <br>
+                                        <small id="email-error"> {{email_error}} </small>
+                                </div>
+
+                                <div class="form-group">
+                                        <small class="status">private</small>
+                                        {%if users.profile_status %}
+                                        <input type="checkbox" checked {{form.profile_status}} {%else%} <input
+                                                type="checkbox" {{form.profile_status}} {%endif%} </div>
+                                <divclass="form-group">
+                                        <button type="submit" class="btn btn-primary btn-sm save-btn mb-2">Save</button>
+                                        <a href="/account-info" class="btn btn-warning btn-sm save-btn mb-2">Cancel</a>
+                                        <!-- <button type="button" class="btn btn-danger btn-sm mb-2">Delete Account</button> -->
+
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+
+                        </div>
+                </form>
+        </div>
+</div>
+{% endif %}
+{% endblock %}

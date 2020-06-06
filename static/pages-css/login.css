@@ -1,0 +1,41 @@
+.login-page {
+    text-align: center;
+}
+
+.form {
+    margin: 70px 0 70px 0;
+    padding: 10px 10px 10px 10px;
+    -webkit-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.75);
+    display: inline-block;
+}
+
+.form-control {
+    height: 30px;
+    font-size: 13px;
+}
+
+.link1 {
+    font-size: 13px;
+}
+
+.link-forget {
+    margin-top: 5px;
+}
+
+.user-error {
+    color: red;
+    font-size: 13px;
+}
+
+.my-input {
+    background-color: transparent;
+    color: wheat;
+  }
+
+  .my-input:focus {
+    background-color: transparent;
+    border-color: #007bff;
+    color: wheat;
+  }

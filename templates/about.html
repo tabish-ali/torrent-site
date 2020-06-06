@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static '/pages-css/about.css' %}">
+
+<div class="container">
+	<div class="row mt-2">
+		<div class="col-md-12">
+			<hr/>
+			<div style="text-align: center;">
+				<h3>About</h3>
+				<img id="admin-img" src="/static/user_images/admin.jpg">
+			</div>
+			<hr />
+			<h5>Intro</h5>
+			<p>A passionate computer engineer who did not find job,
+				started his own site to help people for free.
+				If you need any assistance in your project, you can contact me.
+				I will guide you with best of my ability for free.</p>
+				<hr/>
+				<h5>About site</h5>
+			<p>This website is developed using <strong>Django</strong>,
+				<strong>AJAX</strong>,<strong>Javascript</strong>
+				and <strong>Postgresql</strong> </p>
+			<hr />
+			<h5>Skills</h5>
+			<hr />
+			<h6>Programming languages</h6>
+			<ul>
+				<li>python</li>
+				<li>java</li>
+				<li>javascript</li>
+			</ul>
+			<hr />
+			<h6>Web Technologies</h6>
+			<ul>
+				<li>Django</li>
+				<li>AJAX</li>
+				<li>SQL</li>
+				<li>Bootstrap</li>
+				<li>css</li>
+			</ul>
+			<hr />
+			<h6>Other Technologies</h6>
+			<ul>
+				<li>JavaFx</li>
+				<li>Linux</li>
+				<li>UI and UX desing</li>
+			</ul>
+			<hr />
+			<div style="text-align: center;">
+				<h5>Contact</h5>
+				<a class="btn btn-outline-default" href="https://www.facebook.com/tabi006"><img src="/static/icons/facebook.png"></a>
+				<a class="btn btn-outline-default ml-2" href="https://twitter.com/_tabish_ali"><img src="/static/icons/twitter.png"></a></a>
+				<a class="btn btn-outline-default ml-2" href="https://www.linkedin.com/in/tabish-ali-490814185/"><img src="/static/icons/linkedin.png"></a></a><br/>
+				<div style="text-align: center;">
+					<small>	Skype: tabish466</small> 
+					<small class="ml-2"> Whatsapp: +923099201214</small>
+					<small class="ml-2"> Email: alitabish94@gmail.com</small>
+				</div>
+			  <div>
+			<hr />
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% load crispy_forms_tags %} {% block content %} {% load static %}
+<link rel="stylesheet" href="{% static '/pages-css/login.css' %}">
+
+<script>
+    setTimeout("document.getElementById('errors').style.display='none';", 3000);
+</script>
+
+<div class="login-page">
+    <div class="myform form">
+        <form action="" method="post" name="login">
+            {% csrf_token %}
+            <div class="form-group">
+                {{form.Usr_Name}}
+            </div>
+            <div class="form-group">
+                {{form.Usr_Pwd}}
+            </div>
+            <div class="text-center ">
+                <button type="submit" class=" btn btn-block btn-primary">Login</button>
+            </div>
+            <div class="form-group link-forget">
+                <a href="#" class="link1">Forgot Password</a>
+            </div>
+        </form>
+        <p class="user-error" onloadstart="setTimeout(showErrors, 2000)" id="errors">{{error}}</p>
+    </div>
+</div>
+{% endblock %}

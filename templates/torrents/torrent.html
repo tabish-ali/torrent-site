@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+{% block content %}
+{%load static%}
+
+<link rel="stylesheet" href="{% static '/pages-css/torrent_style.css' %}">
+
+<script>
+
+  // global var contains django var, accessible to every javascript file
+
+  var user_id = {{ user.id }};
+  var post_id = {{ selected_torrent.id }};
+
+</script>
+
+<!-- -------------------------------------------------------------------------------------------->
+<div class="container">
+  <div class="row torrent-info">
+    <div class="col-md-12">
+      <div class="header">
+        <h6 class="header-text">{{name}}&nbsp&nbsp&nbsp
+          <strong style="color:#FFC11E;">{{total_size}}</strong>
+        </h6>
+      </div>
+      <div class="torrent-container">
+        <div class="torrent-thumbnail">
+          <img class="torrent-img" src="/{{selected_torrent.torrent_image}}">
+        </div>
+      </div>
+      <div class="torrent-meta-details">
+        <small>Hash: <strong style="color:aqua;">{{info_hash}}</strong></small>
+        <hr />
+        {%if filename_size.items%}
+        <small>{{name}}</small><br />
+        {% for file,size in filename_size.items %}
+        <small>File: <strong style="color: aqua;">{{file}}&nbsp&nbsp</strong></small>
+        <small>size:</small>
+        <small><strong style="color: #FFC11E;">( {{size}} ) </strong></small>
+        <br />
+        {%endfor%}
+        {%endif%}
+        {%if not filename_size.items%}
+        <small>{{name}}</small><br />
+        <small>File: <strong style="color: aqua;">{{name}}&nbsp&nbsp</strong></small>
+        <small>size:</small>
+        <small><strong style="color: #FFC11E;">( {{total_size}} ) </strong></small>
+        {%endif%}
+        <hr />
+        <small>Date: <strong style="color: aqua">{{selected_torrent.date_of_c}}</strong></small><br />
+        <small>Uploader: <strong style="color: aqua;">{{selected_torrent.uploader_name}}</strong></small>
+        <hr />
+        <div class="tracker-div" id="trackers">
+          {% for tracker in announce_list %}
+          <small>{{tracker}}</small>
+          {% endfor %}
+        </div>
+        <div style="text-align: center;">
+          <button style="margin-top: 10px;" id="show-tracker-btn" class="btn btn-sm btn-secondary"
+            onclick="show_trackers()">
+            Show Trackers
+          </button>
+        </div>
+      </div>
+
+      <div class="interact-div">
+        <span id="showLikes">{{selected_torrent.likes}}</span>
+        <button type="button" id="likeBtn">
+          {% if liked_status %}
+          <i class="far fa-thumbs-up fa-lg" id="thumb_up" style="color:#0076F3"></i>
+          {% else %}
+          <i class="far fa-thumbs-up fa-lg" id="thumb_up" style="color:white;"></i>
+          {%endif%}
+        </button>
+        <span class="ml-2" id="showUnLikes">{{selected_torrent.unlikes}}</span>
+        <button type="button" id="unLikeBtn">
+          {% if unliked_status %}
+          <i class="far fa-thumbs-down fa-lg" id="thumb_down" style="color:#0076F3"></i>
+          {% else %}
+          <i class="far fa-thumbs-down fa-lg" id="thumb_down" style="color:white;"></i>
+          {%endif%}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12" id="comment-div">
+      <textarea oninput="comment_validation()" placeholder="comment here..." id="comments"></textarea>
+      <div style="margin: 0px 0px 0px 5px; text-align: center;">
+        <button disabled id="comment-btn" class="btn btn-primary btn-sm mb-2 mt-2"
+          onclick="post_comment()">Comment</button>
+        <a class="btn btn-sm btn-success" href="{% url 'file_download_view' pk=selected_torrent.pk%}">Download
+          File</a>
+        <button id="like-list-btn" type="button" class="btn btn-sm btn-primary" data-toggle="modal"
+          data-target="#exampleModal">
+          Show Likes
+        </button>
+        <button class="btn btn-danger btn-sm">Magnet Link</button>
+        <button class="btn btn-warning btn-sm">Report</button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 mt-2" id="comments-display-area">
+      <h6>Comments Section</h6>
+      <hr />
+      {%for comment in torrent_comments %}
+      <div style="margin-bottom: -15px;">
+        {% if comment.user_avatar == "" %}
+        {% load static %}
+        <img src="{% static '/user_images/default.png' %}" style="height: 30px; width: 30px; border-radius: 50%;">
+        {% else %}
+        <img src="/{{comment.user_avatar}}" style="height: 30px; width: 30px; border-radius: 50%;">
+        {% endif %}
+        <span class="ml-1" id="user-name">{{comment.user_name}}</span>
+        <small class="ml-2" style="color:grey;">{{comment.date_of_comment}}</small>
+      </div>
+      <small class="ml-3">{{comment.comment|linebreaks}}</small>
+      <span style="font-size: 10px;">144</span>
+      <button class="mb-2 like-c-btn"><i class="far fa-thumbs-up"></i></button>
+      <span style="font-size: 10px;">19</span>
+      <button class="mb-2 like-c-btn"><i class="far fa-thumbs-down"></i></button>
+      <hr />
+      {% endfor %}
+    </div>
+  </div>
+</div>
+</div>
+
+<!--------------------------------------------------------------------------------->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Likes and dislikes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="row">
+
+        <div class="modal-body col-sm-5 ml-3" id="liked-by">
+          <h5>Likes</h5>
+          <li id="likes-list">
+
+          </li>
+        </div>
+        <div class="modal-body col-5 ml-5" id="disliked-by">
+          <h5>Dislikes</h5>
+          <li id="dislikes-list">
+
+          </li>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="{% static '/pages-js/render_dislikes.js' %}"></script>
+<script type="text/javascript" src="{% static '/pages-js/render_likes.js' %}"></script>
+<script type="text/javascript" src="{% static '/pages-js/render_post_likes.js' %}"></script>
+<script type="text/javascript" src="{% static '/pages-js/render_comments.js' %}"></script>
+
+{% endblock %}

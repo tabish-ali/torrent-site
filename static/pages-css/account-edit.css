@@ -1,0 +1,91 @@
+.user-avatar {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    border-color: gray;
+    border-style: solid;
+    border-width: 1px;
+    display: inline-block;
+}
+  
+.card {
+    padding: 1px 1px 1px 1px;
+    margin: 0 auto;
+    float: none;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    background-color:  #2e2f30;
+    opacity: 0.8;
+    border-color: #343a40;
+
+}
+
+.errorlist li {
+    font-size: 13px;
+    text-decoration: none;
+    color: crimson;
+    margin-top: 3px;
+    list-style: none;
+    font-style: italic;
+}
+
+#email-error {
+
+    color: crimson;
+    font-style: italic;
+}
+
+.save-btn {
+    width: 100px;
+
+}
+
+#avatar-btn {
+    background-color: transparent;
+    cursor: pointer;
+    border-radius: 50%;
+    background-size: 50%;
+}
+
+#avatar-btn:hover {
+    opacity: 0.9;
+}
+
+input[type="file"] {
+    display: none;
+}
+.container {
+    position: relative;
+    color: white;
+}
+#output
+{
+    height:100px;
+    width: 100px;
+    border-radius: 50%;
+
+}
+
+.user-avatar:hover{
+    opacity: 0.6;
+}
+.status {
+    color: white;
+}
+.my-input{
+    background-color: transparent;
+    color: wheat;
+    width: 50%;
+}
+.my-input:focus{
+    background-color: transparent;
+    border-color: #007bff;
+    color: wheat;
+}
+.form-control {
+    height: 30px;
+    font-size: 13px;
+}
+hr{
+    border-color: #403e44;
+}

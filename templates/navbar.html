@@ -1,0 +1,74 @@
+{% load static %}
+<link rel="stylesheet" href="{% static '/pages-css/navbar.css' %}">
+
+<nav class="my-nav navbar navbar-expand-lg sticky-top bg-dark">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+    aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-align-justify toggle-icon"></i></span>
+  </button>
+
+  <a href="/" class="navbar-brand ml-3">
+    Torrents Sea
+  </a>
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a href="/" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item">
+        <a  class="nav-link" href="/about" id="about">About</a>
+      </li>
+      <li class="nav-item">
+        <a  class="nav-link" href="" id="policy">Privacy Policy</a>
+      </li>
+      <li class="nav-item">
+        <a  class="nav-link" href="" id="rules">Site Rules</a>
+      </li>
+      {% if not user.is_authenticated %}
+      <li class="nav-item">
+        <a href="/login" class="nav-link" >Login</a>
+      </li>
+
+      <li class="nav-item">
+        <a href="/register" class="nav-link" >Register</a>
+      </li>
+      {% endif %}
+
+
+      {% if user.is_authenticated %}
+      <li class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle mr-3" data-toggle="dropdown" >
+
+          {% for users in user_profile  %}
+          {% if user.id == users.user_id %}
+          {% if not users.image_field == "" %}
+          {{ user}}
+          <img class="avatar ml-2" src="/{{users.image_field}}">
+          {%  else %}
+          {{ user}}
+          {% load static %}
+          <img class="avatar ml-2" src="{% static '/user_images/default.png' %}">
+          {% endif %}
+          {% endif %}
+          {% endfor %}
+        </a>
+
+        <div class="dropdown-menu ml-2">
+          <a href="/account-info" class="dropdown-item">
+            <i class="fas fa-user mr-3"></i>Account
+          </a>
+          <a href="/torrents_list" class="dropdown-item">
+            <i class="fas fa-eye mr-3"></i>view</a>
+
+          <a href="/upload_torrent" class="dropdown-item">
+            <i class="fas fa-upload mr-3"></i>upload</a>
+
+          <a href="/accounts/logout/" class="dropdown-item">
+            <i class="fas fa-sign-out-alt mr-3"></i>logout
+          </a>
+        </div>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>

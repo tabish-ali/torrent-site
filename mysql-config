@@ -1,0 +1,2 @@
+sudo apt install python3.7 python3-dev libmysqlclient-dev libpython3.7-dev    
+pip install mysqlclient
