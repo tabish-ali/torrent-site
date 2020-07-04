@@ -4,38 +4,76 @@
 <title>Home</title>
 {% load static %}
 <link rel="stylesheet" href="{% static '/pages-css/home.css' %}">
-{% if user.is_authenticated %}
 
-<div class="container">
-  <div class="row">
-    {%for torrent in torrents %}
-      <div class="cnt-block ml-2 col-md-4">
-        <h5>{{ torrent.torrent_name }}</h5>
-        <figure class="fig">
-          <a href="{% url 'torrents_view' pk=torrent.pk  %}"> <img src="{{ torrent.torrent_image }}" class="img"
-              alt=""></a>
-        </figure>
-        <div class="show-info-div">
-          <span>
-            <small>likes</small>
-            <small>{{torrent.likes}}</small>
-          </span>
-          <span class="ml-4">
-            <small>unlikes</small>
-            <small>{{torrent.unlikes}}</small>
-          </span>
-        </div>
-        <div class="interact-btns-div">
-          <a class="btn downBtn  btn-sm" href="{% url 'file_download_view' pk=torrent.pk%}">download</a>
-          <a class="btn delBtn  btn-sm" href="{% url 'delete_torrent' pk=torrent.pk%}">delete</a>
-        </div>
-      </div>
-    {% endfor %}
+
+<div class="header-container">
+    <h3>Hi welcome to <em class="logo-first-letter">T</em>orrents <em class="logo-first-letter">S</em>ea </h3>
+
+    <p>We are hosting legal, clean, virus free torrents. So what your are waiting for
+        lets get started search your favourite torrent or read tech articles.
+    </p>
+
+    {% if not user.is_authenticated %}
+
+    <small class="yellow-tag">
+        If you do have account then you can register.
+    </small>
+
+    <hr>
+
+    <div class="call-to-div">
+        <a href="/register" style="width: 100px;" class="btn btn-success">Register</a>
+        <a href="/login" style="width: 100px;" class="btn btn-primary">Login</a>
     </div>
-  {% else %}
-  <div class="alert alert-danger" role="alert">
-    Please login to view your uploaded torrents
-  </div>
+
+    {% endif %}
+
 </div>
-{% endif %}
+
+<div class="container-fluid">
+
+    <div class="col-12 top-section">
+
+        <h5 class="latest-torrents">Latest Uploaded Torrents</h5>
+        <div class="table-responsive">
+            <table class="table table-dark">
+                <tbody>
+                    {% for key, value in latest_five.items %}
+                    <tr>
+                        <td><a style="width: 100%; height: 100%; display: block;" href="{% url 'torrents_view' pk=value.pk  %}">{{key}}</a>
+
+                        </td>
+                    </tr>
+
+                    {% endfor%}
+                </tbody>
+            </table>
+        </div>
+
+        <h5 class="top-uploaders">Top Liked Torrents</h5>
+
+        <div class="table-responsive">
+            <table class="table table-dark">
+                <tbody>
+                    {% for key, value in top_liked.items %}
+                    <tr>
+                        <td>
+                            <a style="display: inline-block; width: 100%;" href="{% url 'torrents_view' pk=value.pk  %}">{{key}}
+                            &nbsp;
+                            <strong class="aqua-tag">{{value.total_likes}}</strong>
+                            </a>
+                            
+                        </td>
+                    </tr>
+
+                    {% endfor%}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
 {% endblock %}

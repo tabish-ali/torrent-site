@@ -15,7 +15,7 @@
     color:white;
   }
   li a:hover{
-    color:chartreuse;
+    color:yellow;
   }
   
   .selected-tab{
@@ -28,7 +28,9 @@
     -webkit-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
-    height: 50px;
+    height: 70px;
+    padding: 10px;
+
   }
 
   .toggle-icon {
@@ -40,7 +42,7 @@
   }
 
   .navbar-brand:hover {
-    color: chartreuse;;
+    color: yellow;
   }
 
   .navbar-collapse {
@@ -71,4 +73,9 @@
   .nav-link:active{
     border: 1px solid white;
     border-width: 0px 0px 1 0px;
+  }
+  .logo-first-letter{
+    color:yellow; 
+    font-weight:bold; 
+    font-size:30px;
   }

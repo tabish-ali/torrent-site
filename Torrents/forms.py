@@ -6,21 +6,16 @@ class UserUploadForm(forms.ModelForm):
     class Meta:
         model = UploadTorrents
         fields = {
-            'torrent_name',
             'torrent_description',
             'torrent_image',
             'torrent_file',
-            'date_of_c',
                 }
-    
-    torrent_name = forms.CharField(label='Name',required=True,
-                            widget=forms.TextInput(
-							attrs={'placeholder':'Name','class':'form-control my-input'}))   
     torrent_description = forms.CharField(label='description',required=True,
-                            widget=forms.TextInput(
-							attrs={'placeholder':'description','class':'form-control my-input'}))   
+                            widget=forms.Textarea(
+							attrs={'placeholder':'description','class':'form-control my-input',
+                            'rows': 1,
+                                  'cols': 40}))   
 
-    date_of_c = forms.CharField(required=False)
 
 class CommentBlock(forms.ModelForm):
     class Meta:

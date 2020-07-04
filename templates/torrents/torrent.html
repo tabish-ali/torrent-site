@@ -1,9 +1,6 @@
 {% extends 'base.html' %}
 {% include 'navbar.html' %}
 {% block content %}
-{%load static%}
-
-<link rel="stylesheet" href="{% static '/pages-css/torrent_style.css' %}">
 
 <script>
 
@@ -20,6 +17,7 @@
     <div class="col-md-12">
       <div class="header">
         <h6 class="header-text">{{name}}&nbsp&nbsp&nbsp
+          <small>{{date}}</small>
           <strong style="color:#FFC11E;">{{total_size}}</strong>
         </h6>
       </div>
@@ -52,7 +50,8 @@
         <hr />
         <div class="tracker-div" id="trackers">
           {% for tracker in announce_list %}
-          <small>{{tracker}}</small>
+          <small>{{tracker.0}}</small>
+          <br>
           {% endfor %}
         </div>
         <div style="text-align: center;">
@@ -64,7 +63,7 @@
       </div>
 
       <div class="interact-div">
-        <span id="showLikes">{{selected_torrent.likes}}</span>
+        <span id="showLikes">{{selected_torrent.total_likes}}</span>
         <button type="button" id="likeBtn">
           {% if liked_status %}
           <i class="far fa-thumbs-up fa-lg" id="thumb_up" style="color:#0076F3"></i>
@@ -72,7 +71,7 @@
           <i class="far fa-thumbs-up fa-lg" id="thumb_up" style="color:white;"></i>
           {%endif%}
         </button>
-        <span class="ml-2" id="showUnLikes">{{selected_torrent.unlikes}}</span>
+        <span class="ml-2" id="showUnLikes">{{selected_torrent.total_unlikes}}</span>
         <button type="button" id="unLikeBtn">
           {% if unliked_status %}
           <i class="far fa-thumbs-down fa-lg" id="thumb_down" style="color:#0076F3"></i>
@@ -85,18 +84,22 @@
   </div>
   <div class="row">
     <div class="col-md-12" id="comment-div">
-      <textarea oninput="comment_validation()" placeholder="comment here..." id="comments"></textarea>
-      <div style="margin: 0px 0px 0px 5px; text-align: center;">
+      <textarea oninput="comment_validation()" placeholder="Write your comments here..." id="comments"></textarea>
+      <div>
         <button disabled id="comment-btn" class="btn btn-primary btn-sm mb-2 mt-2"
-          onclick="post_comment()">Comment</button>
-        <a class="btn btn-sm btn-success" href="{% url 'file_download_view' pk=selected_torrent.pk%}">Download
-          File</a>
+          onclick="post_comment()">
+          <i class="fa fa-comments" aria-hidden="true"></i>
+        </button>
+        <a class="btn btn-sm btn-success" href="{% url 'file_download_view' pk=selected_torrent.pk%}">
+          <i class="fa fa-file" aria-hidden="true"></i>  
+        </a>
         <button id="like-list-btn" type="button" class="btn btn-sm btn-primary" data-toggle="modal"
           data-target="#exampleModal">
-          Show Likes
+          <i class="fa fa-thumbs-up" aria-hidden="true"></i>
         </button>
-        <button class="btn btn-danger btn-sm">Magnet Link</button>
-        <button class="btn btn-warning btn-sm">Report</button>
+        <a class="btn btn-danger btn-sm" href="{{magnet_link}}">
+          <i class="fas fa-magnet"></i>
+        </a>
       </div>
     </div>
   </div>
@@ -113,13 +116,9 @@
         <img src="/{{comment.user_avatar}}" style="height: 30px; width: 30px; border-radius: 50%;">
         {% endif %}
         <span class="ml-1" id="user-name">{{comment.user_name}}</span>
-        <small class="ml-2" style="color:grey;">{{comment.date_of_comment}}</small>
+        <small class="ml-2" style="color:grey;">{{comment.created_at}}</small>
       </div>
-      <small class="ml-3">{{comment.comment|linebreaks}}</small>
-      <span style="font-size: 10px;">144</span>
-      <button class="mb-2 like-c-btn"><i class="far fa-thumbs-up"></i></button>
-      <span style="font-size: 10px;">19</span>
-      <button class="mb-2 like-c-btn"><i class="far fa-thumbs-down"></i></button>
+      <small class="ml-3 comment-text">{{comment.comment|linebreaks}}</small>
       <hr />
       {% endfor %}
     </div>
@@ -127,8 +126,7 @@
 </div>
 </div>
 
-<!--------------------------------------------------------------------------------->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade bd-example-modal-sm" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -141,13 +139,13 @@
       <div class="row">
 
         <div class="modal-body col-sm-5 ml-3" id="liked-by">
-          <h5>Likes</h5>
+          <span style="color: yellow;">Likes</span>
           <li id="likes-list">
 
           </li>
         </div>
-        <div class="modal-body col-5 ml-5" id="disliked-by">
-          <h5>Dislikes</h5>
+        <div class="modal-body col-5 ml-3" id="disliked-by">
+          <span style="color: rgb(255, 11, 93);">Dislikes</span>
           <li id="dislikes-list">
 
           </li>
@@ -164,5 +162,7 @@
 <script type="text/javascript" src="{% static '/pages-js/render_likes.js' %}"></script>
 <script type="text/javascript" src="{% static '/pages-js/render_post_likes.js' %}"></script>
 <script type="text/javascript" src="{% static '/pages-js/render_comments.js' %}"></script>
+
+
 
 {% endblock %}

@@ -7,47 +7,37 @@
     height: 50px;
     width: 50px;
   }
-  .table{
+
+  .table {
     font-size: 14px;
     text-align: center;
   }
-  .fa-download{
-    color:lime;
-    border: 1px solid green;
-    padding: 5px 5px 5px 5px;
-  }
-  .fa-magnet{
-    color:crimson;
-    border: 1px solid red;
-    padding: 5px 5px 5px 5px;
-  }
-
-  
 </style>
-<table class="table table-dark">
-  <thead>
-    <tr>
-      <th scope="col">Torrent</th>
-      <th scope="col">Uploader</th>
-      <th scope="col">Date</th>
-      <th scope="col">Download</th>
-    </tr>
-  </thead>
-  <tbody>
-    {%for torrent in torrents %}
-    <tr>
-      <td> <a style="color: white;" href="{% url 'torrents_view' pk=torrent.pk  %}">{{torrent.torrent_name}}</a></td>
-      <td>{{torrent.uploader_name}}</td>
-      <td>{{torrent.date_of_c}}</td>
-      <td><a href="{% url 'file_download_view' pk=torrent.pk%}">
-        <i class="fa fa-download fa-lg" aria-hidden="true"></i>
-      </a>
-      <a href="#">
-          <i class="fa fa-magnet fa-lg" aria-hidden="true"></i>
-      </a>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="table-responsive">
+  <table class="table table-dark">
+    <thead>
+      <tr>
+        <th scope="col">Torrent</th>
+        <th scope="col">Date</th>
+        <th scope="col">Download</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for key, value in torrents.items %}
+      <tr>
+        <td> <a style="color: white;" href="{% url 'torrents_view' pk=value.pk  %}">{{key}}</a></td>
+        <td>{{value.created_at}}</td>
+        <td><a href="{% url 'file_download_view' pk=value.pk%}">
+            <i class="fa fa-download fa-lg" aria-hidden="true"></i>
+          </a>
+          &nbsp; &nbsp;
+          <a href="#">
+            <i class="fa fa-magnet fa-lg" aria-hidden="true"></i>
+          </a>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 <p id="res"></p>
 {%endblock%}

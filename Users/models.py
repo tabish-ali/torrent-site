@@ -7,6 +7,7 @@ class UserProfile(models.Model):
     email = models.EmailField(max_length=30,blank=False, null= False, unique= True)
     first_name = models.CharField(max_length=20)
     profile_status = models.BooleanField(default=False)
+    total_uploads = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user.username

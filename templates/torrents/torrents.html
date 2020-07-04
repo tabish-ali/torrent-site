@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+
+    <div class="row">
+
+        {%for torrent in torrents %}
+
+        <div class="col-sm-6 mt-5">
+
+            <div class="torrent-div">
+                <center>
+                    <h6>{{torrent.torrent_name}}</h6>
+                    <hr>
+
+                    <a href="{% url 'torrents_view' pk=torrent.pk  %}">
+                        <img  class="torrent-image" src="/{{torrent.torrent_image}}" alt="">
+                    </a>
+     
+
+
+                    <div class="btns-div mt-3">
+
+                        <a href="#" class="btn btn-sm btn-primary">Download</a>
+                        <a href="#" class="btn btn-sm btn-danger">Magnet</a>
+                        <a href="{% url 'torrents_view' pk=torrent.pk  %}" class="btn btn-sm btn-success">Details</a>
+                    </div>
+
+                </center>
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

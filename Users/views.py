@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 import os
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-from Torrents.models import Comments,Likes
+from Torrents.models import Comments,Likes, UploadTorrents
 
 
 
@@ -164,3 +164,14 @@ def user_change_password(request):
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'user-account/change-password.html',context)
+
+
+def uploaded_torrents(request):
+
+    context = {
+	"user_profile":UserProfile.objects.all(),
+	"torrents": UploadTorrents.objects.filter(user_id = request.user.id),
+	}
+
+    return render(request, 'user-account/uploaded_torrents.html', context);
+

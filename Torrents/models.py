@@ -1,29 +1,31 @@
 from django.db import models
 from datetime import date
+from django.contrib.auth.models import User
 
 class UploadTorrents(models.Model):
 
-    torrent_name= models.CharField(max_length=50)
-    torrent_description = models.CharField(max_length=250)
-    torrent_image = models.ImageField(upload_to = 'static/torrent_images/',blank=False,null=True)
-    torrent_file = models.FileField(upload_to='static/torrent-files/',blank=False,null=False)
-    likes = models.IntegerField(default=False)
-    unlikes = models.IntegerField(default=False)
-    uploader_name = models.CharField(max_length=50)
-    user_id = models.IntegerField(default=False)
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    torrent_description = models.CharField(max_length=500)
+    torrent_image = models.ImageField(upload_to = 'static/torrent_images/',blank=True, null=True)
+    torrent_file = models.FileField(upload_to='static/torrent-files/',blank=False, null=False)
+    total_likes = models.IntegerField(default=0, blank = True)
+    total_unlikes = models.IntegerField(default=0, blank = True)
+    uploader_name = models.CharField(max_length=50, blank = True, default='tabish')
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Likes(models.Model):
  
-    user_id = models.IntegerField()
-    post_id = models.IntegerField()
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    post = models.ForeignKey(UploadTorrents, on_delete = models.CASCADE)
     liked = models.BooleanField()
     unliked = models.BooleanField()
     liked_by = models.CharField(max_length=50,blank=True)
     unliked_by = models.CharField(max_length=50,blank=True)
 
+
 class Comments(models.Model):
-    user_id = models.IntegerField()
-    post_id = models.IntegerField()
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    post = models.ForeignKey(UploadTorrents, on_delete = models.CASCADE)
     user_name = models.CharField(max_length=50)
     comment = models.CharField(max_length=1000)
     user_avatar = models.CharField(max_length=250)

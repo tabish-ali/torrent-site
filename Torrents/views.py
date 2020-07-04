@@ -12,8 +12,20 @@ from django.core import serializers
 import json
 import os
 import bencode
+import urllib
 import hashlib
 
+def get_torrent_info(pk):
+
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    torrent = UploadTorrents.objects.get(id=pk)
+    field_path = torrent.torrent_file
+    file_path = os.path.join(BASE_DIR, str(field_path))
+    torrent_file = open(str(field_path),'rb').read()
+
+    data = bencode.decode(torrent_file)
+
+    return data
 
 def torrents_view(request, pk):
     liked_status = False
@@ -30,12 +42,9 @@ def torrents_view(request, pk):
     file_path = os.path.join(BASE_DIR, str(field_path))
     torrent_file = open(str(field_path),'rb').read()
 
-
     data = bencode.decode(torrent_file)
 
-
     info_hash = hashlib.sha1(bencode.bencode(data['info'])).hexdigest()
-
 
     announce = data['announce']
     announce_list =data['announce-list']
@@ -82,6 +91,13 @@ def torrents_view(request, pk):
         liked_status = False
         unliked_status = False
 
+
+    trackers = ''
+    for i in announce_list: 
+        trackers = trackers + '&tr=' + i[0]
+
+    magnet = get_magnet(data, info_hash, trackers)
+
     context ={"selected_torrent" :obj,
     "user_profile":UserProfile.objects.all(),
     "liked_status":liked_status,
@@ -91,14 +107,26 @@ def torrents_view(request, pk):
     "comment_area" : CommentBlock(), 
     "announce":announce,
     "announce_list":announce_list,
+    "magnet_link": magnet,
     "created_by":created_by,
     "filename_size":filename_size,
     "info_hash":info_hash, 
     "total_size":total_size,
     "name":name,
-    }
+    }  
 
     return render(request,"torrents/torrent.html",context)
+
+def get_magnet(meta_data, info_hash, trackers):
+
+    magnet = 'magnet:?'\
+             + 'xt=urn:btih:' + info_hash\
+             + '&dn=' + meta_data['info']['name']\
+             + '&tr=' + meta_data['announce']\
+             + trackers
+
+    return magnet;
+
 
 def total_size_estimate(total_size):
     if total_size >= 1e3 and total_size < 1e6:
@@ -143,16 +171,18 @@ def torrents_upload_view(request):
        
         if uploadForm.is_valid():
             image = request.FILES['torrent_image']
-            name = uploadForm.cleaned_data['torrent_name']
-            
             torrent_file = request.FILES['torrent_file']
             description = uploadForm.cleaned_data['torrent_description']
 
-            UploadTorrents.objects.create(torrent_name=name,
+            UploadTorrents.objects.create(
+            user_id=request.user.id,
+            torrent_name=name,
             torrent_description=description,
             torrent_file=torrent_file,
-            torrent_image=image, user_id=request.user.id,
+            torrent_image=image, 
             uploader_name = request.user)
+
+            update_torrent_counts(request.user, '+')
 
             upload = True
         else:
@@ -164,63 +194,78 @@ def torrents_upload_view(request):
 
 
 def torrents_list_view(request):
+    torrents_dict = {}
+
     obj = UploadTorrents.objects.all()
     user_profile = UserProfile.objects.all()
+
+    for torrent in obj:
+        meta_data = get_torrent_info(torrent.id)
+        torrents_dict[meta_data['info']['name']] = torrent;
+
     context = {
-        "torrents" : obj,
+        "torrents" : torrents_dict,
         "user_profile":user_profile,
         }
 
     return render(request,"torrents/torrents_list.html",context)
 
 def validate_like(request):
-    updated_like = ""
-    updated_unlikes =""
-    is_liked = False
-    user_id = request.GET.get("user_id")
-    post_id = request.GET.get("post_id")
-    
-    post = UploadTorrents.objects.get(id=post_id)
-    liked_obj = Likes.objects.filter(user_id=user_id,post_id=post_id)
-    if liked_obj.count() == 0:
-        Likes.objects.create(user_id=user_id,post_id=post_id,
-        liked_by=str(request.user),liked=True,unliked=False)
-        post.likes += 1
-        post.save()
-        is_liked =True
-    else:  
-        try:
-            obj = Likes.objects.get(user_id=user_id,post_id=post_id)
-            if liked_obj.count()== 1:
-                if(obj.unliked):
-                    obj.unliked = False
-                    obj.liked = True
-                    obj.liked_by = str(request.user)
-                    obj.unliked_by = ""
-                    obj.save()
-                    post.unlikes -= 1
-                    post.likes += 1
-                    post.save()
-                    is_liked = True
 
-                elif obj.liked:
-                    liked_obj.delete()
-                    post.likes -= 1
-                    post.save()
-                    
-        except ObjectDoesNotExist:
-                                print("object does not exist")
+    if(request.user.is_authenticated):
 
-    update = UploadTorrents.objects.get(id=post_id)
-    updated_like = update.likes
-    updated_unlikes = update.unlikes
+        updated_like = ""
+        updated_unlikes =""
+        is_liked = False
+        user_id = request.GET.get("user_id")
+        post_id = request.GET.get("post_id")
+        
+        post = UploadTorrents.objects.get(id=post_id)
+        liked_obj = Likes.objects.filter(user_id=user_id,post_id=post_id)
+        if liked_obj.count() == 0:
+            Likes.objects.create(user_id=user_id,post_id=post_id,
+            liked_by=str(request.user),liked=True,unliked=False)
+            post.total_likes += 1
+            post.save()
+            is_liked =True
+        else:  
+            try:
+                obj = Likes.objects.get(user_id=user_id,post_id=post_id)
+                if liked_obj.count()== 1:
+                    if(obj.unliked):
+                        obj.unliked = False
+                        obj.liked = True
+                        obj.liked_by = str(request.user)
+                        obj.unliked_by = ""
+                        obj.save()
+                        post.total_unlikes -= 1
+                        post.total_likes += 1
+                        post.save()
+                        is_liked = True
 
-    data = {
-        'updated_like': updated_like,
-        'updated_unlikes': updated_unlikes,
-        'is_liked': is_liked,
-    }
-    return JsonResponse(data)
+                    elif obj.liked:
+                        liked_obj.delete()
+                        post.total_likes -= 1
+                        post.save()
+                        
+            except ObjectDoesNotExist:
+                                    print("object does not exist")
+
+        update = UploadTorrents.objects.get(id=post_id)
+        updated_like = update.total_likes
+        updated_unlikes = update.total_unlikes
+
+        data = {
+            'updated_like': updated_like,
+            'updated_unlikes': updated_unlikes,
+            'is_liked': is_liked,
+        }
+        return JsonResponse(data)
+
+    else:
+        login_flag = False 
+        json_data = json.dumps(False)
+        return HttpResponse(json_data, content_type="application/json")
 
 
 
@@ -242,82 +287,97 @@ def get_like_list(request):
 
 
 def validate_unlike(request):
-    updated_like = ""
-    updated_unlikes =""
-    is_unliked = False
 
-    user_id = request.GET.get("user_id")
-    post_id = request.GET.get("post_id")
-    post = UploadTorrents.objects.get(id=post_id)
-    liked_obj = Likes.objects.filter(user_id=user_id,post_id=post_id)
+    if(request.user.is_authenticated):
+    
+        updated_like = ""
+        updated_unlikes =""
+        is_unliked = False
+
+        user_id = request.GET.get("user_id")
+        post_id = request.GET.get("post_id")
+        post = UploadTorrents.objects.get(id=post_id)
+        liked_obj = Likes.objects.filter(user_id=user_id,post_id=post_id)
+            
+        if liked_obj.count() == 0:
+            Likes.objects.create(user_id=user_id,post_id=post_id,
+            unliked_by=str(request.user),liked=False,unliked=True)
+            post.total_unlikes += 1
+            post.save()
+            is_unliked =True
+        else:
+            try:
+                obj = Likes.objects.get(user_id=user_id,post_id=post_id)
+                if liked_obj.count() == 1:
+                    if(obj.liked):
+                        obj.liked = False
+                        obj.unliked = True
+                        obj.unliked_by = str(request.user)
+                        obj.liked_by = ""
+                        obj.save()
+                        post.total_likes -= 1
+                        post.total_unlikes += 1
+                        post.save()
+                        is_unliked = True
+
+                    elif obj.unliked:
+                        liked_obj.delete()
+                        post.total_unlikes -= 1
+                        post.save()
+
+            except ObjectDoesNotExist:
+                                    print("object does not exist")
+
         
-    if liked_obj.count() == 0:
-        Likes.objects.create(user_id=user_id,post_id=post_id,
-        unliked_by=str(request.user),liked=False,unliked=True)
-        post.unlikes += 1
-        post.save()
-        is_unliked =True
+        update = UploadTorrents.objects.get(id=post_id)
+        updated_like = update.total_likes
+        updated_unlikes = update.total_unlikes
+
+        data = {
+            'updated_like':updated_like,
+            'updated_unlikes': updated_unlikes,
+            'is_unliked': is_unliked,
+        }
+        return JsonResponse(data)
+
     else:
-        try:
-            obj = Likes.objects.get(user_id=user_id,post_id=post_id)
-            if liked_obj.count() == 1:
-                if(obj.liked):
-                    obj.liked = False
-                    obj.unliked = True
-                    obj.unliked_by = str(request.user)
-                    obj.liked_by = ""
-                    obj.save()
-                    post.likes -= 1
-                    post.unlikes += 1
-                    post.save()
-                    is_unliked = True
-
-                elif obj.unliked:
-                    liked_obj.delete()
-                    post.unlikes -= 1
-                    post.save()
-
-        except ObjectDoesNotExist:
-                                print("object does not exist")
-
-      
-    update = UploadTorrents.objects.get(id=post_id)
-    updated_like = update.likes
-    updated_unlikes = update.unlikes
-
-    data = {
-        'updated_like':updated_like,
-        'updated_unlikes': updated_unlikes,
-        'is_unliked': is_unliked,
-    }
-    return JsonResponse(data)
+        login_flag = False 
+        json_data = json.dumps(False)
+        return HttpResponse(json_data, content_type="application/json")
 
 def submit_comment(request):
 
-    latest_comment = ""
+    if(request.user.is_authenticated):
 
-    user_id = request.GET.get("user_id")
-    post_id = request.GET.get("post_id")
-    comment = request.GET.get("comment")
-    user_pic = UserProfile.objects.get(user_id=request.user.id).image_field
+        latest_comment = ""
 
-    comment_obj = Comments()
-    comment_obj.user_id = user_id
-    comment_obj.post_id = post_id
-    comment_obj.comment = comment
-    comment_obj.user_name = request.user
-    comment_obj.user_avatar = user_pic
-    comment_obj.save()
+        user_id = request.GET.get("user_id")
+        post_id = request.GET.get("post_id")
+        comment = request.GET.get("comment")
+        user_pic = UserProfile.objects.get(user_id=request.user.id).image_field
 
-    latest_comment_obj = Comments.objects.get(pk=comment_obj.pk)
-    latest_comment = latest_comment_obj.comment
-    user_name = latest_comment_obj.user_name
+        comment_obj = Comments()
+        comment_obj.user_id = user_id
+        comment_obj.post_id = post_id
+        comment_obj.comment = comment
+        comment_obj.user_name = request.user
+        comment_obj.user_avatar = user_pic
+        comment_obj.save()
 
-    data = {
-        'latest_comment':latest_comment,
-        'user_name' : user_name,
-    }
-    return JsonResponse(data, safe=False)
+        latest_comment_obj = Comments.objects.get(pk=comment_obj.pk)
+        latest_comment = latest_comment_obj.comment
+        user_name = latest_comment_obj.user_name
+
+        data = {
+            'latest_comment':latest_comment,
+            'user_name' : user_name,
+        }
+        return JsonResponse(data, safe=False)
+    
+    else:
+        login_flag = False 
+        json_data = json.dumps(False)
+        return HttpResponse(json_data, content_type="application/json")
 
 def delete_torrent(request,pk):
     UploadTorrents.objects.filter(id=pk).delete()
@@ -327,4 +387,32 @@ def delete_torrent(request,pk):
 	    "user_profile":UserProfile.objects.all(),
 	    "torrents": UploadTorrents.objects.filter(user_id = request.user.id),
 	}
+
+    update_torrent_counts(request.user, '-')
+
     return render(request,"home.html",context)
+
+
+def torrents_list(request):
+
+    context = {
+		"torrents": UploadTorrents.objects.all(),
+	}
+    
+    print(context)
+
+    return render(request, "torrents/torrents.html", context)
+
+def update_torrent_counts(user, operator):
+
+    user_profile = UserProfile.objects.get(user_id = user.id)
+
+    if(operator == '+'):
+        user_profile.total_uploads = user_profile.total_uploads + 1;
+    else:
+        user_profile.total_uploads = user_profile.total_uploads - 1;
+        print ("Minus")
+    
+    
+    user_profile.save()
+

@@ -5,7 +5,28 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    opacity: 0.9;
+    background-color:  #1a1a1a;
+    
 }
 hr{
-    border-color: #403e44;
+    border-color: gray;
+}
+
+.header-yellow{
+    color: #fff;
+    border-left:  4px solid yellow;;
+    padding: 5px;
+    background-color:  #141414;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.header-blue{
+    color: #fff;
+    border-left:  4px solid rgb(0, 60, 255);;
+    padding: 5px;
+    background-color:  #141414;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
 }

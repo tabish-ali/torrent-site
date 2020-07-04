@@ -34,10 +34,20 @@ function post_comment() {
       comment: comments,
     },
     success: function (data) {
-      comment_field.value = "";
-      comment_validation();
 
-      $('#comments-display-area').load(document.URL + ' #comments-display-area');
+      if (!data) {
+
+        alert("Please login to comment");
+      }
+      else {
+
+        comment_field.value = "";
+        comment_validation();
+
+        $('#comments-display-area').load(document.URL + ' #comments-display-area');
+
+        $('#comments-display-area').fadeIn("slow");
+      }
     }
   });
 }
@@ -56,13 +66,18 @@ function comment_validation() {
 function show_trackers() {
   var tracker_div = document.getElementById('trackers');
   if (tracker_div.style.display == 'block') {
-    tracker_div.style = "display:none";
     var show_tracker_btn = document.getElementById('show-tracker-btn');
     show_tracker_btn.innerHTML = "Show Trackers";
+
+    $("#trackers").fadeOut();
+    $("#trackers").fadeOut("slow");
+
   } else {
-    tracker_div.style = "display:block";
     var show_tracker_btn = document.getElementById('show-tracker-btn');
     show_tracker_btn.innerHTML = "Hide Trackers";
+
+    $("#trackers").fadeIn();
+    $("#trackers").fadeIn("slow");
   }
 }
 

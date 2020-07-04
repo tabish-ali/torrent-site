@@ -94,7 +94,7 @@
     margin-right: 5px;
   }
   #comments:focus{
-    border: 1px solid #3c9dde;
+    border: 1px solid yellow;
     border-width: 0 0 2px 0;
   }
   #comments::selection{
@@ -117,11 +117,16 @@
     display: none;
   }
   hr{
-    border-color: #403e44;
+    border-color: gray;
   }
   .like-c-btn{
     background-color: transparent;
     color:white;
     border:none;
     cursor: pointer;
+  }
+  .comment-text p{
+
+    padding: 5px;
+
   }
